@@ -1,0 +1,123 @@
+Reverse Pairs
+
+Given an integer array nums, count the number of pairs (i, j) such that:
+
+i < j
+nums[i] > 2 * nums[j]
+Pattern / Algorithm
+Divide and Conquer
+Merge Sort
+Two Pointers
+Intuition
+
+A brute-force solution checks every pair (i, j), which takes O(n²) time.
+
+Merge Sort divides the array into two sorted halves. Once both halves are sorted, we can efficiently count reverse pairs where:
+
+i belongs to the left half
+j belongs to the right half
+
+For each element in the left half, we move a pointer through the right half while:
+
+arr[i] > 2L * arr[right]
+
+Since both halves are sorted, the right pointer never needs to move backward.
+
+After counting the reverse pairs, we merge the two halves.
+
+Approach
+Divide the array into two halves using Merge Sort.
+Recursively count reverse pairs in the left half.
+Recursively count reverse pairs in the right half.
+
+Count cross-half reverse pairs:
+
+arr[i] > 2 * arr[j]
+Merge the two sorted halves.
+Return the total count.
+
+The total count is:
+
+left pairs + right pairs + cross pairs
+Complexity
+Time Complexity: O(n log n)
+Space Complexity: O(n)
+
+
+
+
+
+class Solution {
+    public int reversePairs(int[] nums) {
+        int n = nums.length;
+        return mergeSort(nums, 0, n - 1);
+    }
+
+    public int mergeSort(int[] arr, int low, int high) {
+        int count = 0;
+
+        if (low >= high) {
+            return count;
+        }
+
+        int mid = low + (high - low) / 2;
+
+        count += mergeSort(arr, low, mid);
+        count += mergeSort(arr, mid + 1, high);
+
+        count += countPairs(arr, low, mid, high);
+
+        merge(arr, low, mid, high);
+
+        return count;
+    }
+
+    public int countPairs(int[] arr, int low, int mid, int high) {
+        int right = mid + 1;
+        int count = 0;
+
+        for (int i = low; i <= mid; i++) {
+
+            while (right <= high &&
+                   (long) arr[i] > 2L * arr[right]) {
+                right++;
+            }
+
+            count += right - (mid + 1);
+        }
+
+        return count;
+    }
+
+    public void merge(int[] arr, int low, int mid, int high) {
+        ArrayList<Integer> temp = new ArrayList<>();
+
+        int left = low;
+        int right = mid + 1;
+
+        while (left <= mid && right <= high) {
+
+            if (arr[left] <= arr[right]) {
+                temp.add(arr[left]);
+                left++;
+            } else {
+                temp.add(arr[right]);
+                right++;
+            }
+        }
+
+        while (left <= mid) {
+            temp.add(arr[left]);
+            left++;
+        }
+
+        while (right <= high) {
+            temp.add(arr[right]);
+            right++;
+        }
+
+        for (int i = low; i <= high; i++) {
+            arr[i] = temp.get(i - low);
+        }
+    }
+}
