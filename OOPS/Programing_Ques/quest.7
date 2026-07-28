@@ -1,0 +1,29 @@
+class Engine {
+
+    Engine() {
+        System.out.print("Engine ");
+    }
+}
+
+class Car {
+
+    Engine e = new Engine();
+
+    Car() {
+        System.out.print("Car ");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Car c = new Car();
+    }
+}
+===================================================output=====================================================================
+Instance variables initialize before constructor body.
+Order:
+
+Engine object created
+Car constructor executes
+
+Output:    Engine Car
