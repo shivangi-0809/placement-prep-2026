@@ -1,0 +1,104 @@
+Question.2) Overloading vs Overriding
+
+class Parent {
+    void display(Number n) {
+        System.out.println("Parent Number");
+    }
+}
+
+class Child extends Parent {
+
+    void display(Number n) {
+        System.out.println("Child Number");
+    }
+
+    void display(Integer n) {
+        System.out.println("Child Integer");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+
+        Parent p = new Child();
+        p.display(10);
+    }
+}
+
+
+================================Solution========================================
+Parent p = new Child();
+
+This creates
+
+Reference -----> Parent
+Object --------> Child
+
+##Compiler checks the method
+p.display(10);
+Compiler asks: "What methods does Parent have?"
+Parent only has display(Number)
+It does NOT know about display(Integer) because p is a Parent reference.
+So compiler chooses display(Number)
+
+Notice something important.
+
+The compiler never even considers    display(Integer)
+
+##Runtime starts
+Now JVM knows the actual object is
+new Child()
+So it asks
+"Is display(Number) overridden?"
+Yes.
+
+class Child {
+
+    void display(Number n) {
+        System.out.println("Child Number");
+    }
+
+}
+
+Therefore JVM executes
+Child Number
+
+Output              Child Number
+
+##Why NOT Child Integer?
+
+People think
+
+10
+
+↓
+
+Integer
+
+↓
+
+display(Integer)
+
+But that never happens.
+Because overload resolution has already finished.
+Compiler already selected
+
+display(Number)
+
+Runtime cannot change the parameter list.
+
+Runtime only decides
+
+Which overridden version of the same signature should run?
+
+Not
+
+Which overloaded method should be called?
+
+
+
+
+
+
+
+
