@@ -1,0 +1,85 @@
+Question 10 : Constructor + Field Initialization + Overriding
+class A {
+
+    A() {
+        print();
+    }
+
+    void print() {
+        System.out.println("A");
+    }
+}
+
+class B extends A {
+
+    int x = 5;
+
+    void print() {
+        System.out.println(x);
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        B b = new B();
+
+        b.print();
+    }
+}
+
+
+======================================output===========================================
+
+Parent constructor runs.
+
+A() {
+    print();
+}
+
+Calls overridden method.
+
+So:
+
+B.print()
+
+executes.
+
+At this moment:
+
+int x = 5;
+
+has not initialized yet.
+
+Default value:
+
+x = 0
+
+First output:
+
+0
+Step 2
+
+Parent constructor finishes.
+
+Step 3
+
+Field initialization happens.
+
+x = 5
+Step 4
+
+Main:
+b.print();
+
+Now x is initialized.
+
+Output:
+
+5
+
+Final:
+
+0
+5
