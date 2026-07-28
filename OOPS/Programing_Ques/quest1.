@@ -1,0 +1,35 @@
+Questiob-01 -Constructor + Overriding + Dynamic Dispatch
+
+
+
+class A {
+    A() {
+        show();
+    }
+
+    void show() {
+        System.out.println("A");
+    }
+}
+
+class B extends A {
+    int x = 10;
+
+    void show() {
+        System.out.println(x);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        B obj = new B();
+    }
+}
+
+
+
+//When new B() is executed:
+//A constructor runs first.
+//show() is overridden, so B.show() is called.
+//At this moment x has not been initialized to 10 yet.
+//Instance variables get default value 0.
