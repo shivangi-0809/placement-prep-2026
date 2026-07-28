@@ -1,0 +1,30 @@
+quuestion.5) Upcasting + Overriding + Variable Hiding
+class A {
+    int x = 10;
+
+    void show() {
+        System.out.println(x);
+    }
+}
+
+class B extends A {
+    int x = 20;
+
+    void show() {
+        System.out.println(x);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+
+        A obj = new B();
+
+        System.out.println(obj.x);
+
+        obj.show();
+    }
+}
+=========================================output======================================
+10
+20
