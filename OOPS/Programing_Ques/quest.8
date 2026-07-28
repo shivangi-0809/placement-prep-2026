@@ -1,0 +1,36 @@
+question 8) Multi-level Inheritance
+class A {
+    void show() {
+        System.out.print("A ");
+    }
+}
+
+class B extends A {
+    void show() {
+        System.out.print("B ");
+    }
+}
+
+class C extends B {
+
+}
+
+public class Main {
+    public static void main(String[] args) {
+
+        A obj = new C();
+        obj.show();
+    }
+}
+==========================================output==================================================
+
+
+C doesn't override show().
+
+It inherits B.show().
+
+Dynamic dispatch finds nearest override.
+
+Output:
+
+B
