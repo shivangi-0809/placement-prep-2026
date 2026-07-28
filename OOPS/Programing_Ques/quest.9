@@ -1,0 +1,47 @@
+Polymorphism Trap
+class A {
+    void show(Object obj) {
+        System.out.println("Object");
+    }
+}
+
+class B extends A {
+
+    void show(String str) {
+        System.out.println("String");
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        A obj = new B();
+
+        obj.show("Hello");
+    }
+}
+
+
+
+
+=====================================output===================================
+Compiler checks methods available in class A.
+
+show(Object obj)
+exists.
+
+Compiler binds call to:
+show(Object)
+
+Now runtime looks for an overridden version.
+B has: show(String)
+
+This is overloading, not overriding.
+
+No override exists.
+
+Therefore:
+             Object
+
+Output:    Object
