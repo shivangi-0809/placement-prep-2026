@@ -1,0 +1,22 @@
+question.6} Abstract Class + Constructor
+abstract class A {
+
+    A() {
+        System.out.print("A ");
+    }
+}
+
+class B extends A {
+
+    B() {
+        System.out.print("B ");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        A obj = new B();
+    }
+}
+=====================================output============================
+A B
