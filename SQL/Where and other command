@@ -1,0 +1,75 @@
+WHERE
+
+WHERE filters rows based on a condition.
+
+Example:
+
+SELECT *
+FROM Student
+WHERE age > 20;
+
+
+WHERE EXISTS
+
+EXISTS checks whether another query returns at least one row.
+
+Syntax:
+
+SELECT ...
+FROM table1
+WHERE EXISTS (
+    SELECT 1
+    FROM table2
+    WHERE ...
+);
+
+Why SELECT 1?
+
+You could write
+SELECT *
+or
+SELECT order_id
+or
+SELECT customer_id
+or
+SELECT 100
+They all work.
+
+
+
+Rule of thumb
+
+Use WHERE when filtering by column values.
+
+WHERE salary > 50000
+
+Use EXISTS when asking "Does at least one matching row exist?"
+
+ORDER BY column1, column2, ... ASC|DESC;
+
+We will have to use the IS NULL and IS NOT NULL operators instead.
+
+The UPDATE statement is used to update or modify one or more records in a table.
+
+UPDATE Syntax
+UPDATE table_name
+SET column1 = value1, column2 = value2, ...
+WHERE condition;
+
+
+The GROUP BY statement is used to group rows that have the same values into summary rows, like "Find the number of customers in each country".
+
+The GROUP BY statement is almost always used in conjunction with aggregate functions, like COUNT(), MAX(), MIN(), SUM(), AVG(), to perform calculations on each group.
+
+
+The HAVING clause is used to filter the results of a GROUP BY query based on aggregate functions.
+
+Unlike the WHERE clause, which filters individual rows before grouping, the HAVING clause filters groups after the aggregation has been performed.
+
+HAVING Syntax
+SELECT column1, aggregate_function(column2), column3, ...
+FROM table_name
+WHERE condition
+GROUP BY column1, column3
+HAVING condition -- The condition on grouped data
+ORDER BY column_name
