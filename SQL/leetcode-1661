@@ -1,0 +1,252 @@
+# LeetCode 1661 - Average Time of Process per Machine
+
+## SQL Query
+
+```sql
+SELECT
+    a.machine_id,
+    AVG(b.timestamp - a.timestamp) AS processing_time
+FROM Activity AS a
+JOIN Activity AS b
+ON a.machine_id = b.machine_id
+AND a.process_id = b.process_id
+WHERE a.activity_type = 'start'
+AND b.activity_type = 'end'
+GROUP BY a.machine_id;
+```
+
+---
+
+# Step-by-Step Execution
+
+## Step 1: FROM
+
+```sql
+FROM Activity AS a
+```
+
+SQL first creates a copy of the `Activity` table and names it **a**.
+
+At this stage:
+
+| machine_id | process_id | activity_type | timestamp |
+| ---------- | ---------- | ------------- | --------- |
+| 0          | 0          | start         | 0.712     |
+| 0          | 0          | end           | 1.520     |
+| 0          | 1          | start         | 3.140     |
+| 0          | 1          | end           | 4.120     |
+| 1          | 0          | start         | 0.550     |
+| ...        | ...        | ...           | ...       |
+
+Nothing has been filtered yet.
+
+---
+
+## Step 2: JOIN
+
+```sql
+JOIN Activity AS b
+ON a.machine_id = b.machine_id
+AND a.process_id = b.process_id
+```
+
+SQL creates another copy of the same table called **b**.
+
+```
+a (Activity)        b (Activity)
+```
+
+Now SQL matches rows where:
+
+* `machine_id` is the same
+* `process_id` is the same
+
+For Machine 0, Process 0:
+
+Table **a**
+
+| activity | timestamp |
+| -------- | --------- |
+| start    | 0.712     |
+| end      | 1.520     |
+
+Table **b**
+
+| activity | timestamp |
+| -------- | --------- |
+| start    | 0.712     |
+| end      | 1.520     |
+
+Possible matches:
+
+| a.activity | b.activity |
+| ---------- | ---------- |
+| start      | start      |
+| start      | end        |
+| end        | start      |
+| end        | end        |
+
+At this point, SQL has **not** filtered anything.
+
+---
+
+## Step 3: WHERE
+
+```sql
+WHERE
+a.activity_type = 'start'
+AND
+b.activity_type = 'end'
+```
+
+Now SQL removes every pair except the **start → end** pair.
+
+Remaining rows:
+
+| machine_id | process_id | start_time | end_time |
+| ---------- | ---------- | ---------- | -------- |
+| 0          | 0          | 0.712      | 1.520    |
+| 0          | 1          | 3.140      | 4.120    |
+| 1          | 0          | 0.550      | 1.550    |
+| 1          | 1          | 0.430      | 1.420    |
+| 2          | 0          | 4.100      | 4.512    |
+| 2          | 1          | 2.500      | 5.000    |
+
+This ensures each process is matched with its own start and end timestamps.
+
+---
+
+## Step 4: Calculate Processing Time
+
+Inside the `SELECT` statement:
+
+```sql
+b.timestamp - a.timestamp
+```
+
+SQL calculates the processing time for each process.
+
+Example:
+
+```
+1.520 - 0.712 = 0.808
+```
+
+```
+4.120 - 3.140 = 0.980
+```
+
+Temporary result:
+
+| machine_id | processing_time |
+| ---------- | --------------- |
+| 0          | 0.808           |
+| 0          | 0.980           |
+| 1          | 1.000           |
+| 1          | 0.990           |
+| 2          | 0.412           |
+| 2          | 2.500           |
+
+---
+
+## Step 5: GROUP BY
+
+```sql
+GROUP BY a.machine_id
+```
+
+SQL groups rows having the same `machine_id`.
+
+Machine 0
+
+```
+0.808
+0.980
+```
+
+Machine 1
+
+```
+1.000
+0.990
+```
+
+Machine 2
+
+```
+0.412
+2.500
+```
+
+You can think of SQL as creating separate buckets for each machine.
+
+---
+
+## Step 6: AVG()
+
+```sql
+AVG(b.timestamp - a.timestamp)
+```
+
+SQL calculates the average processing time inside each bucket.
+
+Machine 0
+
+```
+(0.808 + 0.980) / 2
+= 0.894
+```
+
+Machine 1
+
+```
+(1.000 + 0.990) / 2
+= 0.995
+```
+
+Machine 2
+
+```
+(0.412 + 2.500) / 2
+= 1.456
+```
+
+---
+
+## Final Output
+
+| machine_id | processing_time |
+| ---------- | --------------- |
+| 0          | 0.894           |
+| 1          | 0.995           |
+| 2          | 1.456           |
+
+---
+
+# Key Concepts Learned
+
+* **Self Join:** Joining a table with itself using different aliases (`a` and `b`).
+* **Aliases:** `a` and `b` represent two copies of the same table.
+* **JOIN Condition:** Matches rows having the same `machine_id` and `process_id`.
+* **WHERE:** Keeps only the `start → end` pairs.
+* **Expression:** `b.timestamp - a.timestamp` calculates the processing time.
+* **GROUP BY:** Creates one group for each machine.
+* **AVG():** Computes the average processing time for each machine.
+
+---
+
+# SQL Execution Order
+
+SQL logically executes the query in the following order:
+
+1. `FROM`
+2. `JOIN`
+3. `ON`
+4. `WHERE`
+5. `GROUP BY`
+6. Aggregate Functions (`AVG`, `COUNT`, `SUM`, etc.)
+7. `SELECT`
+8. `ORDER BY` (if present)
+9. `LIMIT` (if present)
+
+Understanding this execution order makes complex SQL queries much easier to debug and reason about.
