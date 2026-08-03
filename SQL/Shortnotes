@@ -28,3 +28,41 @@ ALTER TABLE - modifies a table
 DROP TABLE - deletes a table
 CREATE INDEX - creates an index (search key)
 DROP INDEX - deletes an index
+
+
+The SELECT statement is used to select data from a database.
+Select ALL columns from the "Customers" table:
+
+SELECT * FROM Customers;
+
+The SELECT DISTINCT statement is used to return only distinct (unique) values.
+SELECT DISTINCT Country FROM Customers;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
