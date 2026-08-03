@@ -1,0 +1,455 @@
+# LeetCode 1280 - Students and Examinations
+
+## Problem
+
+For every student and every subject, return the number of times the student attended the exam for that subject.
+
+The result should contain:
+
+* `student_id`
+* `student_name`
+* `subject_name`
+* `attended_exams`
+
+ordered by `student_id` and `subject_name`.
+
+---
+
+# SQL Solution
+
+```sql
+SELECT
+    s.student_id,
+    s.student_name,
+    sub.subject_name,
+    COUNT(e.student_id) AS attended_exams
+FROM Students s
+CROSS JOIN Subjects sub
+LEFT JOIN Examinations e
+ON s.student_id = e.student_id
+AND sub.subject_name = e.subject_name
+GROUP BY
+    s.student_id,
+    s.student_name,
+    sub.subject_name
+ORDER BY
+    s.student_id,
+    sub.subject_name;
+```
+
+---
+
+# Step 1 : FROM Students
+
+SQL first reads the `Students` table.
+
+| student_id | student_name |
+| ---------- | ------------ |
+| 1          | Alice        |
+| 2          | Bob          |
+| 6          | Alex         |
+| 13         | John         |
+
+At this point, SQL only knows about the students.
+
+---
+
+# Step 2 : CROSS JOIN Subjects
+
+```sql
+CROSS JOIN Subjects sub
+```
+
+`CROSS JOIN` creates every possible combination of students and subjects.
+
+Students:
+
+```
+Alice
+Bob
+Alex
+John
+```
+
+Subjects:
+
+```
+Math
+Physics
+Programming
+```
+
+Result:
+
+| Student | Subject     |
+| ------- | ----------- |
+| Alice   | Math        |
+| Alice   | Physics     |
+| Alice   | Programming |
+| Bob     | Math        |
+| Bob     | Physics     |
+| Bob     | Programming |
+| Alex    | Math        |
+| Alex    | Physics     |
+| Alex    | Programming |
+| John    | Math        |
+| John    | Physics     |
+| John    | Programming |
+
+Since there are **4 students** and **3 subjects**, SQL creates:
+
+```
+4 × 3 = 12 rows
+```
+
+Every student now has one row for every subject, even if they never attended that exam.
+
+---
+
+# Step 3 : LEFT JOIN Examinations
+
+```sql
+LEFT JOIN Examinations e
+ON s.student_id = e.student_id
+AND sub.subject_name = e.subject_name
+```
+
+SQL now searches for matching examination records.
+
+A match occurs only when:
+
+* Student IDs are equal.
+* Subject names are equal.
+
+---
+
+## Example 1
+
+Current row:
+
+| Student | Subject |
+| ------- | ------- |
+| Alice   | Math    |
+
+SQL searches for:
+
+```
+student_id = 1
+subject_name = 'Math'
+```
+
+Matches found:
+
+```
+Math
+Math
+Math
+```
+
+Result:
+
+| Student | Subject |
+| ------- | ------- |
+| Alice   | Math    |
+| Alice   | Math    |
+| Alice   | Math    |
+
+Three rows because Alice attended the Math examination three times.
+
+---
+
+## Example 2
+
+Current row:
+
+| Student | Subject |
+| ------- | ------- |
+| Alice   | Physics |
+
+Matches:
+
+```
+Physics
+Physics
+```
+
+Result:
+
+| Student | Subject |
+| ------- | ------- |
+| Alice   | Physics |
+| Alice   | Physics |
+
+---
+
+## Example 3
+
+Current row:
+
+| Student | Subject |
+| ------- | ------- |
+| Bob     | Physics |
+
+No matching examination exists.
+
+Since this is a **LEFT JOIN**, SQL keeps the row.
+
+Result:
+
+| Student | Subject | Exam |
+| ------- | ------- | ---- |
+| Bob     | Physics | NULL |
+
+---
+
+## Example 4
+
+Current row:
+
+| Student | Subject     |
+| ------- | ----------- |
+| Alex    | Programming |
+
+Alex never attended any exam.
+
+Result:
+
+| Student | Subject     | Exam |
+| ------- | ----------- | ---- |
+| Alex    | Programming | NULL |
+
+---
+
+# Intermediate Table After LEFT JOIN
+
+| Student | Subject     | Exam Exists? |
+| ------- | ----------- | ------------ |
+| Alice   | Math        | ✓            |
+| Alice   | Math        | ✓            |
+| Alice   | Math        | ✓            |
+| Alice   | Physics     | ✓            |
+| Alice   | Physics     | ✓            |
+| Alice   | Programming | ✓            |
+| Bob     | Math        | ✓            |
+| Bob     | Physics     | NULL         |
+| Bob     | Programming | ✓            |
+| Alex    | Math        | NULL         |
+| Alex    | Physics     | NULL         |
+| Alex    | Programming | NULL         |
+| John    | Math        | ✓            |
+| John    | Physics     | ✓            |
+| John    | Programming | ✓            |
+
+Notice:
+
+* Multiple examination records create multiple rows.
+* Missing examinations become `NULL`.
+
+---
+
+# Step 4 : GROUP BY
+
+```sql
+GROUP BY
+    s.student_id,
+    s.student_name,
+    sub.subject_name
+```
+
+SQL now creates one group for every **Student + Subject** combination.
+
+Example:
+
+### Group 1
+
+```
+Alice
+Math
+```
+
+Contains:
+
+```
+✓
+✓
+✓
+```
+
+Three rows.
+
+---
+
+### Group 2
+
+```
+Alice
+Physics
+```
+
+Contains:
+
+```
+✓
+✓
+```
+
+Two rows.
+
+---
+
+### Group 3
+
+```
+Bob
+Physics
+```
+
+Contains:
+
+```
+NULL
+```
+
+One row, but no matching examination.
+
+---
+
+### Group 4
+
+```
+Alex
+Programming
+```
+
+Contains:
+
+```
+NULL
+```
+
+---
+
+# Step 5 : COUNT()
+
+```sql
+COUNT(e.student_id)
+```
+
+`COUNT(column)` counts only **non-NULL** values.
+
+Examples:
+
+### Alice - Math
+
+```
+1
+1
+1
+```
+
+Count = **3**
+
+---
+
+### Alice - Physics
+
+```
+1
+1
+```
+
+Count = **2**
+
+---
+
+### Bob - Physics
+
+```
+NULL
+```
+
+Count = **0**
+
+---
+
+### Alex - Programming
+
+```
+NULL
+```
+
+Count = **0**
+
+This is why the solution uses:
+
+```sql
+COUNT(e.student_id)
+```
+
+and **not**:
+
+```sql
+COUNT(*)
+```
+
+`COUNT(*)` counts every row, including rows where the examination is `NULL`, which would produce incorrect answers.
+
+---
+
+# Step 6 : ORDER BY
+
+```sql
+ORDER BY
+    s.student_id,
+    sub.subject_name;
+```
+
+Finally, SQL sorts the output by:
+
+1. Student ID
+2. Subject Name
+
+---
+
+# Final Output
+
+| student_id | student_name | subject_name | attended_exams |
+| ---------- | ------------ | ------------ | -------------- |
+| 1          | Alice        | Math         | 3              |
+| 1          | Alice        | Physics      | 2              |
+| 1          | Alice        | Programming  | 1              |
+| 2          | Bob          | Math         | 1              |
+| 2          | Bob          | Physics      | 0              |
+| 2          | Bob          | Programming  | 1              |
+| 6          | Alex         | Math         | 0              |
+| 6          | Alex         | Physics      | 0              |
+| 6          | Alex         | Programming  | 0              |
+| 13         | John         | Math         | 1              |
+| 13         | John         | Physics      | 1              |
+| 13         | John         | Programming  | 1              |
+
+---
+
+# Key Concepts Learned
+
+* **CROSS JOIN** creates every possible Student-Subject pair.
+* **LEFT JOIN** keeps all Student-Subject pairs, even if no examination exists.
+* **Multiple conditions in `ON`** ensure the correct examination is matched.
+* **GROUP BY** creates one bucket for each Student-Subject pair.
+* **COUNT(column)** ignores `NULL` values, making it ideal for counting matching examinations.
+* **ORDER BY** sorts the final output.
+
+---
+
+# SQL Execution Order
+
+1. `FROM`
+2. `CROSS JOIN`
+3. `LEFT JOIN`
+4. `ON`
+5. `GROUP BY`
+6. `COUNT()`
+7. `SELECT`
+8. `ORDER BY`
+
+Understanding this execution order makes it much easier to reason about complex SQL queries involving joins and aggregation.
