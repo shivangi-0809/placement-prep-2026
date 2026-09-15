@@ -17,3 +17,24 @@ CLASSIFICATION REGRESSION
      ├── Decision Tree
      ├── Random Forest
      └── Gradient Boosting
+
+
+
+ML PIPELINE
+│
+├── Data
+│
+├── Preprocessing
+│      └── Normalization
+│
+├── Feature Selection
+│      ├── Filter
+│      ├── Wrapper
+│      └── Embedded
+│
+└── Model
+       ├── Linear Regression
+       ├── Logistic Regression
+       ├── Decision Tree
+       ├── Random Forest
+       └── Gradient Boosting
